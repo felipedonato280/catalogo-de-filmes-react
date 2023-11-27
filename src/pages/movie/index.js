@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
-import "./styles.css";
+import { useParams, Link } from "react-router-dom";
+import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 
 const Movie = () => {
     const { id } = useParams();
@@ -9,43 +8,39 @@ const Movie = () => {
 
     const [movie, setMovie] = useState([]);
     const KEY = process.env.REACT_APP_KEY;
+
     useEffect(() => {
-        fetch(
-            `https://api.themoviedb.org/3/movie/popular?api_key=${KEY}&language=pt-BR`
-        )
+        fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${KEY}&language=pt-BR`)
             .then((response) => response.json())
             .then((data) => {
                 const res = data.results;
-                let filme = res.find((key) => {
-                    // eslint-disable-next-line
-                    return key.id == id;
-                });
+                let filme = res.find((key) => key.id.toString() === id);
                 setMovie(filme);
-            }); // eslint-disable-next-line
-    }, []);
+            });
+    }, [id, KEY]);
 
     return (
-        <div>
-            <nav>
-                <h1>Movie</h1>
-            </nav>
-            <img
-                className="img_movie"
-                src={`${imagePath}${movie.poster_path}`}
-                alt="{movie.title}"
-            />
-            <div className="container">
-                <h1>{movie.title}</h1>
-                <h3>Data de lançamento: {movie.release_date}</h3>
-                <div className="descricao">
-                    <h4>Descrição: </h4>
-                    <p className="movie-desc">{movie.overview}</p>
-                </div>
-                <Link to="/">
-                    <button className="link_button">Voltar</button>
-                </Link>
-            </div>
-        </div>
+        <Container className="mt-5">
+            <Row className="justify-content-center">
+                <Col md={4}>
+                    <Card>
+                        <Card.Img variant="top" src={`${imagePath}${movie.poster_path}`} alt={movie.title} />
+                        <Card.Body>
+                            <Card.Title>{movie.title}</Card.Title>
+                            <Card.Text>
+                                <strong>Data de lançamento:</strong> {movie.release_date}
+                            </Card.Text>
+                            <Card.Text>
+                                {movie.overview}
+                            </Card.Text>
+                            <Link to="/" className="d-grid gap-2">
+                                <Button variant="primary" size="lg">Voltar</Button>
+                            </Link>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+        </Container>
     );
 };
 
